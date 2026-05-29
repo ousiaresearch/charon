@@ -1,0 +1,71 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn lint
+
+  types:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn test:types
+
+  unit:
+    strategy:
+      matrix:
+        node: [18, 20, 22]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: npx jest --testPathPattern='src/.*\.spec\.js$' --forceExit
+
+  integration:
+    strategy:
+      matrix:
+        kafka-version: ['2.4', '3.6', 'latest']
+    runs-on: ubuntu-latest
+    services:
+      zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+        ports:
+          - 2181:2181
+      kafka:
+        image: confluentinc/cp-kafka:${{ matrix.kafka-version == 'latest' && 'latest' || matrix.kafka-version }}
+        env:
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        ports:
+          - 9092:9092
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn jest --ci --maxWorkers=4 --no-watchman --forceExit
+        env:
+          KAFKAJS_NO_PARTITION_MOVER: '1'
+          KAFKA_BROKERS: localhost:9092

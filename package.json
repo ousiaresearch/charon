@@ -1,27 +1,33 @@
 {
-  "name": "kafkajs",
-  "version": "2.2.4",
-  "description": "A modern Apache Kafka client for node.js",
-  "author": "Tulio Ornelas <ornelas.tulio@gmail.com>",
+  "name": "@ousia/kafkajs",
+  "version": "3.0.0",
+  "description": "A modern Apache Kafka client for Node.js — maintained fork of KafkaJS by Ousia Research",
+  "author": "Ousia Research <research@ousia.ai>",
+  "contributors": [
+    "Tulio Ornelas <ornelas.tulio@gmail.com> (original author)",
+    "Tommy Brunn <tommy.brunn@gmail.com> (original maintainer)"
+  ],
   "main": "index.js",
   "types": "types/index.d.ts",
   "license": "MIT",
   "keywords": [
     "kafka",
+    "kafkajs",
     "sasl",
-    "scram"
+    "scram",
+    "charon"
   ],
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tulios/kafkajs.git"
+    "url": "https://github.com/ousiaresearch/charon.git"
   },
   "bugs": {
-    "url": "https://github.com/tulios/kafkajs/issues"
+    "url": "https://github.com/ousiaresearch/charon/issues"
   },
-  "homepage": "https://kafka.js.org",
+  "homepage": "https://github.com/ousiaresearch/charon",
   "scripts": {
     "jest": "export KAFKA_VERSION=${KAFKA_VERSION:='2.4'} && NODE_ENV=test echo \"KAFKA_VERSION: ${KAFKA_VERSION}\" && KAFKAJS_DEBUG_PROTOCOL_BUFFERS=1 jest",
     "test:local": "yarn jest --detectOpenHandles",

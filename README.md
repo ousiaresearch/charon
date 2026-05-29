@@ -1,142 +1,74 @@
-[![npm version](https://img.shields.io/npm/v/kafkajs?color=%2344cc11&label=stable)](https://www.npmjs.com/package/kafkajs) [![npm pre-release version](https://img.shields.io/npm/v/kafkajs/beta?label=pre-release)](https://www.npmjs.com/package/kafkajs) [![Build Status](https://dev.azure.com/tulios/kafkajs/_apis/build/status/tulios.kafkajs?branchName=master)](https://dev.azure.com/tulios/kafkajs/_build/latest?definitionId=2&branchName=master) [![Slack Channel](https://join.slack.com/t/kafkajs/shared_invite/zt-1ezd5395v-SOpTqYoYfRCyPKOkUggK0Abadge.svg)](https://join.slack.com/t/kafkajs/shared_invite/zt-1ezd5395v-SOpTqYoYfRCyPKOkUggK0A)
-<br />
-<p align="center">
-  <a href="https://kafka.js.org">
-      <img src="https://raw.githubusercontent.com/tulios/kafkajs/master/logo/v2/kafkajs_circle.svg" alt="Logo" width="125" height="125">
-  </a>
+# Charon — Kafka Client for Node.js
 
-  <h3 align="center">KafkaJS</h3>
+> **The maintained fork of KafkaJS.** Drop-in replacement. No code changes.
 
-  <p align="center">
-    A modern Apache Kafka® client for Node.js
-    <br />
-    <a href="https://kafka.js.org/"><strong>Get Started »</strong></a>
-    <br />
-    <br />
-    <a href="https://kafka.js.org/docs/getting-started" target="_blank">Read the Docs</a>
-    ·
-    <a href="https://github.com/tulios/kafkajs/issues/new?assignees=&labels=&template=bug_report.md&title=">Report Bug</a>
-    ·
-    <a href="https://github.com/tulios/kafkajs/issues/new?assignees=&labels=&template=feature_request.md&title=">Request Feature</a>
-  </p>
-</p>
+[![CI](https://github.com/ousiaresearch/charon/workflows/CI/badge.svg)](https://github.com/ousiaresearch/charon/actions)
+[![npm](https://img.shields.io/npm/v/@ousia/kafkajs?label=%40ousia%2Fkafkajs)](https://www.npmjs.com/package/@ousia/kafkajs)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink)](https://github.com/sponsors/ousiaresearch)
 
-## Table of Contents
+KafkaJS was the standard Kafka client for Node.js — 12 million monthly downloads, pure JavaScript, zero native dependencies. In August 2024, its maintainers [stepped down](https://github.com/tulios/kafkajs/issues/1603). Two years later, no successor emerged.
 
-- [About the project](#about)
-  - [Features](#features)
-  - [Getting Started](#getting-started)
-    - [Usage](#usage)
-- [Contributing](#contributing)
-  - [Help Wanted](#help-wanted)
-  - [Contact](#contact)
-- [License](#license)
-  - [Acknowledgements](#acknowledgements)
+**Charon is that successor.**
 
-## <a name="about"></a> About the Project
+---
 
-KafkaJS is a modern [Apache Kafka](https://kafka.apache.org/) client for Node.js. It is compatible with Kafka 0.10+ and offers native support for 0.11 features.
+## Why this fork exists
 
-<small>KAFKA is a registered trademark of The Apache Software Foundation and has been licensed for use by KafkaJS. KafkaJS has no affiliation with and is not endorsed by The Apache Software Foundation.</small>
+The original `tulios/kafkajs` hasn't seen a commit since August 2024. 400+ open issues. 10 open PRs, including bugfixes from weeks ago that no one reviewed. 12.2 million monthly npm downloads — all running unmaintained code.
 
-### <a name="features"></a> Features
+Three takeover attempts failed. Confluent built an alternative — zero adoption. The community tried community forks — they died. Users stay because they need **pure JavaScript**: no native compilation, no platform-specific binaries, no Docker image bloat.
 
-* Producer
-* Consumer groups with pause, resume, and seek
-* Transactional support for producers and consumers
-* Message headers
-* GZIP compression
-  * Snappy, LZ4 and ZSTD compression through pluggable codecs
-* Plain, SSL and SASL_SSL implementations
-* Support for SCRAM-SHA-256 and SCRAM-SHA-512
-* Support for AWS IAM authentication
-* Admin client
+**Charon picks up where KafkaJS left off.** Same API, same protocol, now actively maintained by Ousia Research.
 
-### <a name="getting-started"></a> Getting Started
+---
 
-```sh
-npm install kafkajs
-# yarn add kafkajs
+## Migration — one line
+
+```diff
+- "kafkajs": "^2.2.4"
++ "@ousia/kafkajs": "^3.0.0"
 ```
 
-#### <a name="usage"></a> Usage
-```javascript
-const { Kafka } = require('kafkajs')
-
-const kafka = new Kafka({
-  clientId: 'my-app',
-  brokers: ['kafka1:9092', 'kafka2:9092']
-})
-
-const producer = kafka.producer()
-const consumer = kafka.consumer({ groupId: 'test-group' })
-
-const run = async () => {
-  // Producing
-  await producer.connect()
-  await producer.send({
-    topic: 'test-topic',
-    messages: [
-      { value: 'Hello KafkaJS user!' },
-    ],
-  })
-
-  // Consuming
-  await consumer.connect()
-  await consumer.subscribe({ topic: 'test-topic', fromBeginning: true })
-
-  await consumer.run({
-    eachMessage: async ({ topic, partition, message }) => {
-      console.log({
-        partition,
-        offset: message.offset,
-        value: message.value.toString(),
-      })
-    },
-  })
-}
-
-run().catch(console.error)
+```diff
+- const { Kafka } = require('kafkajs')
++ const { Kafka } = require('@ousia/kafkajs')
 ```
 
-Learn more about using [KafkaJS on the official site!](https://kafka.js.org)
+**That's it.** No code changes. No API changes. Same protocol, same behavior. Now with a maintainer.
 
-- [Getting Started](https://kafka.js.org/docs/getting-started)
-- [A Brief Intro to Kafka](https://kafka.js.org/docs/introduction)
-- [Configuring KafkaJS](https://kafka.js.org/docs/configuration)
-- [Example Producer](https://kafka.js.org/docs/producer-example)
-- [Example Consumer](https://kafka.js.org/docs/consumer-example)
+---
 
-> _Read something on the website that didn't work with the latest stable version?_  
-[Check the pre-release versions](https://kafka.js.org/docs/pre-releases) - the website is updated on every merge to master.
+## What's new in v3.0.0
 
-## <a name="contributing"></a> Contributing
+- **Node >= 18** (was >= 14)
+- **Actively maintained** — PRs reviewed, issues triaged, bugs fixed
+- **GitHub Actions CI** — tested against Node 18, 20, 22 on Kafka 2.4 through latest
+- **KRaft support** — Kafka 3.3+ without ZooKeeper
+- **Modern tooling** — updated dependencies, security audits, dependabot
+- **TypeScript types maintained** — no more stale `.d.ts` files
 
-KafkaJS is an open-source project where development takes place in the open on GitHub. Although the project is maintained by a small group of dedicated volunteers, we are grateful to the community for bug fixes, feature development and other contributions.
+### Bugs fixed in this release
 
-See [Developing KafkaJS](https://kafka.js.org/docs/contribution-guide) for information on how to run and develop KafkaJS.
+*(To be populated as we merge fixes)*
 
-### <a name="help-wanted"></a> Help wanted 🤝
+---
 
-We welcome contributions to KafkaJS, but we also want to see a thriving third-party ecosystem. If you would like to create an open-source project that builds on top of KafkaJS, [please get in touch](https://join.slack.com/t/kafkajs/shared_invite/zt-1ezd5395v-SOpTqYoYfRCyPKOkUggK0A) and we'd be happy to provide feedback and support.
+## Sponsors
 
-Here are some projects that we would like to build, but haven't yet been able to prioritize:
+Charon is maintained by [Ousia Research](https://github.com/ousiaresearch). If your company depends on this library, consider [sponsoring](https://github.com/sponsors/ousiaresearch) to keep it maintained.
 
-* [Dead Letter Queue](https://eng.uber.com/reliable-reprocessing/) - Automatically reprocess messages
-* ✅ [Schema Registry](https://www.confluent.io/confluent-schema-registry/) - **[Now available!](https://www.npmjs.com/package/@kafkajs/confluent-schema-registry)** thanks to [@erikengervall](https://github.com/erikengervall)
-* [Metrics](https://prometheus.io/) - Integrate with the [instrumentation events](https://kafka.js.org/docs/instrumentation-events) to expose commonly used metrics
+| Tier | Price | What you get |
+|------|-------|-------------|
+| Supporter | $5/mo | Name in README, warm feelings |
+| Professional | $25/mo | Priority issue triage, sponsor badge |
+| Enterprise | $100/mo | Email support, SLA on critical bugs |
+| Partner | $500/mo | Dedicated support channel, roadmap input |
 
-### <a name="contact"></a> Contact 💬
+---
 
-[Join our Slack community](https://join.slack.com/t/kafkajs/shared_invite/zt-1ezd5395v-SOpTqYoYfRCyPKOkUggK0A)
+## Credits
 
-## <a name="license"></a> License
+Charon is a fork of [KafkaJS](https://github.com/tulios/kafkajs), created by [Túlio Ornelas](https://github.com/tulios) and maintained by [Tommy Brunn](https://github.com/Nevon) and the KafkaJS community. We're grateful for the foundation they built.
 
-See [LICENSE](https://github.com/tulios/kafkajs/blob/master/LICENSE) for more details.
-
-### <a name="acknowledgements"></a> Acknowledgements
-
-* Thanks to [Sebastian Norde](https://github.com/sebastiannorde) for the V1 logo ❤️
-* Thanks to [Tracy (Tan Yun)](https://medium.com/@tanyuntracy) for the V2 logo ❤️
-
-<small>Apache Kafka and Kafka are either registered trademarks or trademarks of The Apache Software Foundation in the United States and other countries. KafkaJS has no affiliation with the Apache Software Foundation.</small>
+*"Charon" — the ferryman. Carries your messages across the river.*
