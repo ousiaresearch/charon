@@ -74,6 +74,8 @@ const requests = {
   IncrementalAlterConfigs: noImplementedRequestDefinitions,
   AlterPartitionReassignments: require('./alterPartitionReassignments'),
   ListPartitionReassignments: require('./listPartitionReassignments'),
+  ConsumerGroupHeartbeat: require('./consumerGroupHeartbeat'),
+  ConsumerGroupDescribe: require('./consumerGroupDescribe'),
 }
 
 const names = Object.keys(apiKeys)

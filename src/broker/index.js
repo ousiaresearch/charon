@@ -897,6 +897,70 @@ module.exports = class Broker {
   }
 
   /**
+   * KIP-848: ConsumerGroupHeartbeat (Key: 68)
+   * The new consumer group protocol — replaces JoinGroup + SyncGroup + Heartbeat
+   * for consumer groups using group.protocol=consumer.
+   *
+   * @public
+   * @param {object} options
+   * @param {string} options.groupId
+   * @param {string} options.memberId
+   * @param {number} options.memberEpoch
+   * @param {string|null} [options.instanceId]
+   * @param {string|null} [options.rackId]
+   * @param {number} options.rebalanceTimeoutMs
+   * @param {string[]} [options.subscribedTopicNames]
+   * @returns {Promise<{throttleTime: number, errorCode: number, errorMessage: string|null, memberId: string, memberEpoch: number, heartbeatInterval: number, assignment: Array}>}
+   */
+  async consumerGroupHeartbeat({
+    groupId,
+    memberId,
+    memberEpoch,
+    instanceId = null,
+    rackId = null,
+    rebalanceTimeoutMs,
+    subscribedTopicNames,
+  }) {
+    const consumerGroupHeartbeat = this.lookupRequest(
+      apiKeys.ConsumerGroupHeartbeat,
+      requests.ConsumerGroupHeartbeat
+    )
+    return await this[PRIVATE.SEND_REQUEST](
+      consumerGroupHeartbeat({
+        groupId,
+        memberId,
+        memberEpoch,
+        instanceId,
+        rackId,
+        rebalanceTimeoutMs,
+        subscribedTopicNames,
+      })
+    )
+  }
+
+  /**
+   * KIP-848: ConsumerGroupDescribe (Key: 69)
+   * Describe one or more consumer groups.
+   *
+   * @public
+   * @param {string[]} groupIds
+   * @param {boolean} [includeAuthorizedOperations=false]
+   * @returns {Promise<{throttleTime: number, groups: Array}>}
+   */
+  async consumerGroupDescribe({ groupIds, includeAuthorizedOperations = false }) {
+    const consumerGroupDescribe = this.lookupRequest(
+      apiKeys.ConsumerGroupDescribe,
+      requests.ConsumerGroupDescribe
+    )
+    return await this[PRIVATE.SEND_REQUEST](
+      consumerGroupDescribe({
+        groupIds,
+        includeAuthorizedOperations,
+      })
+    )
+  }
+
+  /**
    * @private
    */
   async [PRIVATE.SEND_REQUEST](protocolRequest) {

@@ -2,6 +2,7 @@ const Long = require('../utils/long')
 const createRetry = require('../retry')
 const { initialRetryTime } = require('../retry/defaults')
 const ConsumerGroup = require('./consumerGroup')
+const ConsumerGroup848 = require('./kip848/consumerGroup848')
 const Runner = require('./runner')
 const { events, wrap: wrapEvent, unwrap: unwrapEvent } = require('./instrumentationEvents')
 const InstrumentationEventEmitter = require('../instrumentation/emitter')
@@ -40,6 +41,7 @@ const specialOffsets = [
  * @param {number} [params.maxWaitTimeInMs]
  * @param {number} [params.isolationLevel]
  * @param {string} [params.rackId]
+ * @param {string} [params.groupProtocol] - 'classic' (default, JoinGroup/SyncGroup/Heartbeat) or 'consumer' (KIP-848, Kafka 4.0+)
  * @param {InstrumentationEventEmitter} [params.instrumentationEmitter]
  * @param {number} params.metadataMaxAge
  *
@@ -60,6 +62,7 @@ module.exports = ({
   maxWaitTimeInMs = 5000,
   isolationLevel = ISOLATION_LEVEL.READ_COMMITTED,
   rackId = '',
+  groupProtocol = 'classic',
   instrumentationEmitter: rootInstrumentationEmitter,
   metadataMaxAge,
 }) => {
@@ -201,9 +204,11 @@ module.exports = ({
     }
 
     const start = async onCrash => {
-      logger.info('Starting', { groupId })
+      logger.info('Starting', { groupId, groupProtocol })
 
-      consumerGroup = new ConsumerGroup({
+      const ConsumerGroupClass = groupProtocol === 'consumer' ? ConsumerGroup848 : ConsumerGroup
+
+      consumerGroup = new ConsumerGroupClass({
         logger: rootLogger,
         topics: keys(topics),
         topicConfigurations: topics,
