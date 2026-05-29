@@ -1,40 +1,115 @@
-# Contributing to KafkaJS
+# Contributing to Charon
 
-Thank you for considering contributing to KafkaJS!
+Thanks for helping maintain the Kafka client that 12 million npm users depend
+on.
 
-Reading and following these guidelines will help us make the contribution process easy and effective for everyone involved. It also communicates that you agree to respect the time of the developers managing and developing these open source projects.
+## Getting started
 
-## Getting Started
+```bash
+# Clone and install
+git clone https://github.com/ousiaresearch/charon.git
+cd charon
+yarn install
+```
 
-Contributions are made to this repo via Issues and Pull Requests (PRs). A few general guidelines that cover both:
+**Requirements:**
+- Node.js >= 18
+- Yarn (package manager)
+- Docker + Docker Compose v2 (for integration tests)
 
-- Search for existing issues and PRs before creating your own.
-- The maintainers of KafkaJS are people that volunteer their time. We try to address issues and PRs in a timely manner, but cannot make any guarantees. Please don't @mention individual maintainers to try to get their attention.
+## Running tests
 
-### Issues
+### Unit tests
 
-Issues should be used to report problems with the library, request a new feature, or to discuss potential changes before a PR is created. Please follow the issue template that's provided when you first create an issue in order to collect all the necessary information.
+```bash
+# Protocol-level tests (fast, no Kafka needed)
+yarn jest --testPathPattern='src/.*\.spec\.js$'
+```
 
-Issues are not a support channel. Please use [StackOverflow](https://stackoverflow.com/questions/tagged/kafkajs), [Slack](https://join.slack.com/t/kafkajs/shared_invite/zt-1ezd5395v-SOpTqYoYfRCyPKOkUggK0A) or other online resources instead. [Limited support from a maintainer](https://github.com/sponsors/Nevon?frequency=one-time&sponsor=Nevon) is available to sponsors.
+### Lint
 
-If you find an issue that addresses the problem you're having, please add your own reproduction information to the existing issue rather than creating a new one. Adding a [reaction](https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/) can also help be indicating to our maintainers that a particular problem is affecting more than just the reporter.
+```bash
+yarn lint
+```
 
-### Pull Requests
+### Type checks
 
-PRs are welcome and can be a quick way to get your fix or improvement out. If you've never contributed before, see [the contribution guidelines on our website](https://kafka.js.org/docs/contribution-guide) for practical information on how to get started.
+```bash
+yarn test:types
+```
 
-In general, PRs should:
+### Integration tests (requires Docker)
 
-- Only fix/add the functionality in question **OR** address wide-spread whitespace/style issues, not both.
-- Add tests for fixed or changed functionality.
-- Address a single concern.
-- Update the [Typescript type definitions](./types) if your change introduces any new or affects existing interfaces.
-- Include documentation if it changes the functionality of the library. Our [documentation](https://kafka.js.org/docs/getting-started) is in the [`/docs`](./docs/) folder of the repo.
+```bash
+# Start Kafka 2.4
+docker compose -f docker-compose.2_4.yml up -d
 
-If your PR introduces a change in functionality or adds new functionality, always open an issue first to discuss your proposal before implementing it. This is especially crucial for breaking changes, which will almost always be rejected unless discussed first. For bug fixes this is not required, but still recommended.
+# Run integration tests
+yarn jest --testPathPattern='src/.*/__tests__/.*\.spec\.js$' --forceExit
 
-Once a PR is merged and the master build is successful, a pre-release version of KafkaJS will be published to NPM in the [beta channel](https://www.npmjs.com/package/kafkajs/v/beta), which you can use until a there has been a stable release made containing your change.
+# Stop Kafka when done
+docker compose -f docker-compose.2_4.yml down
+```
 
-## Getting Help
+Other Kafka versions available:
+- `docker-compose.2_2.yml` — Kafka 2.2
+- `docker-compose.2_3.yml` — Kafka 2.3
+- `docker-compose.2_4_oauthbearer.yml` — Kafka 2.4 + OAuth
 
-Join our [Slack community](https://join.slack.com/t/kafkajs/shared_invite/zt-1ezd5395v-SOpTqYoYfRCyPKOkUggK0A) if you have questions about the contribution process or otherwise want to get in touch.
+## Project structure
+
+```
+src/
+├── index.js           # Public API surface
+├── admin/             # Topic/partition/ACL management
+├── broker/            # Broker connection + request dispatch
+├── cluster/           # Cluster discovery + metadata
+├── consumer/          # Consumer groups, fetch manager, offset management
+│   └── assigners/     # Partition assignment strategies
+├── producer/          # Message production, batching, compression
+│   └── partitioners/  # Default, Java-compatible, murmur2
+├── protocol/          # Kafka wire protocol encoding/decoding
+│   ├── requests/      # Request builders
+│   ├── message/       # Message format v0/v1
+│   ├── messageSet/    # Message set encoding
+│   ├── recordBatch/   # Record batch v2 (Kafka 0.11+)
+│   └── sasl/          # SASL authentication
+├── network/           # TCP connection pool, request queue
+├── retry/             # Exponential backoff
+├── loggers/           # Pluggable logging
+├── instrumentation/   # Event emitters for metrics
+└── utils/             # Shared utilities
+```
+
+## Pull request process
+
+1. **Open an issue first** unless it's a trivial fix
+2. **Write tests** — all PRs need passing tests
+3. **Run lint + types** — `yarn lint && yarn test:types`
+4. **Keep it focused** — one concern per PR
+5. **Update docs** if you change the public API
+6. **Be patient** — this is volunteer-maintained
+
+## Commit conventions
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: add KRaft support for Kafka 3.3+
+fix: prevent consumer crash on rebalance timeout
+perf: optimize metadata refresh path
+docs: update migration guide for v3
+chore: update dev dependencies
+```
+
+## Code style
+
+- Prettier for formatting (`yarn format`)
+- ESLint for linting (`yarn lint`)
+- Existing patterns are law — match what's there
+- No `console.log` — use the logger (`this.logger.debug(...)`)
+
+## Questions?
+
+[Open a discussion](https://github.com/ousiaresearch/charon/discussions) or
+[file an issue](https://github.com/ousiaresearch/charon/issues/new).

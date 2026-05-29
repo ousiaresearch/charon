@@ -1,8 +1,8 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
+about: Propose a feature for Charon
+title: '[Feature]: '
+labels: ['enhancement', 'triage']
 assignees: ''
 
 ---
