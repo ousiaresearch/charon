@@ -1,6 +1,6 @@
 {
   "name": "@ousiaresearch/kafkajs",
-  "version": "3.0.0",
+  "version": "3.0.1-beta.0",
   "description": "A modern Apache Kafka client for Node.js — maintained fork of KafkaJS by Ousia Research",
   "author": "Ousia Research <research@ousia.ai>",
   "contributors": [
