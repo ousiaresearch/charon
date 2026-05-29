@@ -1,4 +1,8 @@
-const { KafkaJSInvalidVarIntError, KafkaJSInvalidLongError } = require('../errors')
+const {
+  KafkaJSInvalidVarIntError,
+  KafkaJSInvalidLongError,
+  KafkaJSNonRetriableError,
+} = require('../errors')
 const Long = require('../utils/long')
 
 const INT8_SIZE = 1
@@ -90,6 +94,13 @@ module.exports = class Decoder {
       return null
     }
 
+    if (!this.canReadBytes(byteLength)) {
+      throw new KafkaJSNonRetriableError(
+        `Buffer underflow: expected ${byteLength} bytes but only ${Buffer.byteLength(this.buffer) -
+          this.offset} remain`
+      )
+    }
+
     const stringBuffer = this.buffer.slice(this.offset, this.offset + byteLength)
     const value = stringBuffer.toString('utf8')
     this.offset += byteLength
@@ -101,6 +112,13 @@ module.exports = class Decoder {
 
     if (byteLength === -1) {
       return null
+    }
+
+    if (!this.canReadBytes(byteLength)) {
+      throw new KafkaJSNonRetriableError(
+        `Buffer underflow: expected ${byteLength} bytes but only ${Buffer.byteLength(this.buffer) -
+          this.offset} remain`
+      )
     }
 
     const stringBuffer = this.buffer.slice(this.offset, this.offset + byteLength)
@@ -116,10 +134,18 @@ module.exports = class Decoder {
       return null
     }
 
-    const stringBuffer = this.buffer.slice(this.offset, this.offset + byteLength - 1)
+    const dataSize = byteLength - 1
+    if (!this.canReadBytes(dataSize)) {
+      throw new KafkaJSNonRetriableError(
+        `Buffer underflow: expected ${dataSize} bytes but only ${Buffer.byteLength(this.buffer) -
+          this.offset} remain`
+      )
+    }
+
+    const stringBuffer = this.buffer.slice(this.offset, this.offset + dataSize)
     const value = stringBuffer.toString('utf8')
 
-    this.offset += byteLength - 1
+    this.offset += dataSize
     return value
   }
 

@@ -1,5 +1,5 @@
 const createSendMessages = require('./sendMessages')
-const { KafkaJSError, KafkaJSNonRetriableError } = require('../errors')
+const { KafkaJSNonRetriableError } = require('../errors')
 const { CONNECTION_STATUS } = require('../network/connectionStatus')
 
 module.exports = ({
@@ -28,7 +28,8 @@ module.exports = ({
           `The producer is disconnecting; therefore, it can't safely accept messages anymore`
         )
       case CONNECTION_STATUS.DISCONNECTED:
-        throw new KafkaJSError('The producer is disconnected')
+        logger.debug('Producer is disconnected, will reconnect before sending', {})
+        break
     }
   }
 
