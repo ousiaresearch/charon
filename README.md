@@ -3,7 +3,7 @@
 > **The maintained fork of KafkaJS.** Drop-in replacement. No code changes.
 
 [![CI](https://github.com/ousiaresearch/charon/workflows/CI/badge.svg)](https://github.com/ousiaresearch/charon/actions)
-[![npm](https://img.shields.io/npm/v/@ousia/kafkajs?label=%40ousia%2Fkafkajs)](https://www.npmjs.com/package/@ousia/kafkajs)
+[![npm](https://img.shields.io/npm/v/@ousiaresearch/kafkajs?label=%40ousiaresearch%2Fkafkajs)](https://www.npmjs.com/package/@ousiaresearch/kafkajs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-pink)](https://github.com/sponsors/ousiaresearch)
 

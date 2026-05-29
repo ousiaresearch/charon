@@ -1,4 +1,4 @@
-# Migrating from tulios/kafkajs to @ousia/kafkajs (Charon)
+# Migrating from tulios/kafkajs to @ousiaresearch/kafkajs (Charon)
 
 Charon is a drop-in replacement for KafkaJS. No code changes required beyond
 your npm install command.
@@ -7,21 +7,21 @@ your npm install command.
 
 ```bash
 npm uninstall kafkajs
-npm install @ousia/kafkajs
+npm install @ousiaresearch/kafkajs
 ```
 
 Then update your imports:
 
 ```diff
 - const { Kafka } = require('kafkajs')
-+ const { Kafka } = require('@ousia/kafkajs')
++ const { Kafka } = require('@ousiaresearch/kafkajs')
 ```
 
 Or with ES modules:
 
 ```diff
 - import { Kafka } from 'kafkajs'
-+ import { Kafka } from '@ousia/kafkajs'
++ import { Kafka } from '@ousiaresearch/kafkajs')
 ```
 
 ## API compatibility
